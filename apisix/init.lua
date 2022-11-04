@@ -707,38 +707,10 @@ local function healthcheck_passive(api_ctx)
     local port = up_conf.checks and up_conf.checks.active
                  and up_conf.checks.active.port
 
-    local resp_status = ngx.status
-    local http_statuses = passive and passive.healthy and
-                          passive.healthy.http_statuses
-    core.log.info("passive.healthy.http_statuses: ",
-                  core.json.delay_encode(http_statuses))
-    if http_statuses then
-        for i, status in ipairs(http_statuses) do
-            if resp_status == status then
-                checker:report_http_status(api_ctx.balancer_ip,
-                                           port or api_ctx.balancer_port,
-                                           host,
-                                           resp_status)
-            end
-        end
-    end
-
-    http_statuses = passive and passive.unhealthy and
-                    passive.unhealthy.http_statuses
-    core.log.info("passive.unhealthy.http_statuses: ",
-                  core.json.delay_encode(http_statuses))
-    if not http_statuses then
-        return
-    end
-
-    for i, status in ipairs(http_statuses) do
-        if resp_status == status then
-            checker:report_http_status(api_ctx.balancer_ip,
-                                       port or api_ctx.balancer_port,
-                                       host,
-                                       resp_status)
-        end
-    end
+    checker:report_http_status(api_ctx.balancer_ip,
+                               port or api_ctx.balancer_port,
+                               host,
+                               resp_status)
 end
 
 
